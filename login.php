@@ -1,6 +1,46 @@
 <?php
+require "./database/conn.php";
 
+define('PEPPER', 'k9!dP$3xZq7&vW');
 
+try {
+
+    if ($_SERVER['REQUEST_METHOD'] == "POST") {
+
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+
+        // Get user from database
+        $sql = "SELECT password_hash, salt FROM users WHERE username = :username";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stored_hash = $row['password_hash'];
+            $stored_salt = $row['salt'];
+
+            // Recreate the same combination
+            $input_password = $password . $stored_salt . PEPPER;
+
+            // Verify password
+            if (password_verify($input_password, $stored_hash)) {
+                echo "<script>alert('Login Successful');</script>";
+            } else {
+                echo "<script>alert('Invalid Username or Password');</script>";
+            }
+
+        } else {
+            echo "<script>alert('Invalid Username or Password');</script>";
+        }
+    }
+
+} catch(PDOException $e) {
+    $msg = addslashes($e->getMessage());
+    echo "<script>alert('Error: $msg');</script>";
+}
 ?>
 
 <!DOCTYPE html>
@@ -25,7 +65,7 @@
           <p class="subtitle">Sign in to your account</p>
         </div>
         
-        <form id="loginForm">
+        <form id="loginForm" method="POST">
           <div class="input-group">
             <label for="loginUsername">Username</label>
             <input type="text" id="loginUsername" name="username" placeholder="Username" autocomplete="username">

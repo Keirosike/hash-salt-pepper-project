@@ -29,3 +29,14 @@ document.getElementById("reginForm").addEventListener("submit", function(e) {
         errorDiv.textContent = ""; // Clear error
     }
 });
+
+// Clear messages when user focuses on any input
+document.querySelectorAll('#reginForm input').forEach(input => {
+    input.addEventListener('focus', () => {
+        const errorDiv = document.getElementById('reginError');
+        const successDiv = document.getElementById('reginSuccess');
+        if (errorDiv) errorDiv.textContent = '';
+        if (successDiv) successDiv.textContent = '';
+    });
+});
+

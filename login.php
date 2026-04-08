@@ -5,7 +5,7 @@ session_start();
 define('PEPPER', 'k9!dP$3xZq7&vW');
 
 $error = "";
-
+$success = "";
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $username = trim($_POST['username']);
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
                 if (password_verify($input_password, $stored_hash)) {
                     $_SESSION['username'] = $username;
-                  
+                    $success = "Login successful! Redirecting to dashboard...";
                     // Redirect will be handled by JavaScript after showing the message
                 } else {
                     $error = "Invalid username or password.";
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         <!-- Message containers -->
         <div id="loginError" class="form-error"><?php echo htmlspecialchars($error); ?></div>
-       
+        <div id="loginSuccess" class="form-success"><?php echo htmlspecialchars($success); ?></div>
       </form>
 
       <div class="toggle-prompt">
@@ -95,18 +95,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 </div>
 
 <script>
-  // Auto-redirect after successful login
-  <?php if (!empty($success)): ?>
-    setTimeout(function() {
-      window.location.href = "dashboard.php";
-    }, 1000);
-  <?php endif; ?>
+  
 
   // Clear messages when user starts typing (optional)
   document.querySelectorAll('#loginForm input').forEach(input => {
     input.addEventListener('focus', () => {
       document.getElementById('loginError').textContent = '';
-   
+      document.getElementById('loginSuccess').textContent = '';
     });
   });
 </script>

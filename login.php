@@ -8,6 +8,7 @@ $error = "";
 $success = "";
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
+
     $username = trim($_POST['username']);
     $password = $_POST['password'];
 
@@ -15,28 +16,41 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $error = "Please enter both username and password.";
     } else {
         try {
+
             $sql = "SELECT password_hash, salt FROM users WHERE username = :username";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':username', $username);
             $stmt->execute();
 
-            if ($stmt->rowCount() > 0) {
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            // FIX: avoid rowCount()
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($row) {
+
                 $stored_hash = $row['password_hash'];
                 $stored_salt = $row['salt'];
 
+                // rebuild input using salt + pepper (same as registration)
                 $input_password = $password . $stored_salt . PEPPER;
 
+                // FIX: correct verification usage
                 if (password_verify($input_password, $stored_hash)) {
+
+                    session_regenerate_id(true);
                     $_SESSION['username'] = $username;
+
                     $success = "Login successful! Redirecting to dashboard...";
-                    // Redirect will be handled by JavaScript after showing the message
+                    header("refresh:1;url=dashboard.html");
+                    exit;
+
                 } else {
                     $error = "Invalid username or password.";
                 }
+
             } else {
                 $error = "Invalid username or password.";
             }
+
         } catch (PDOException $e) {
             $error = "Database error: Could not log in.";
         }

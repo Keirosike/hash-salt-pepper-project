@@ -18,25 +18,24 @@ document.getElementById("reginForm").addEventListener("submit", function(e) {
     const password = document.getElementById("reginPassword").value;
     const errorDiv = document.getElementById("reginError");
 
-    // Regex: at least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
-    const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/;
 
     if (!pattern.test(password)) {
-        e.preventDefault(); // Stop form submission
-        errorDiv.textContent = "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.";
+        e.preventDefault();
+        errorDiv.textContent = "Password must be at least 12 characters and include uppercase, lowercase, number, and special character.";
         errorDiv.style.color = "red";
     } else {
-        errorDiv.textContent = ""; // Clear error
+        errorDiv.textContent = "";
     }
 });
 
-// Clear messages when user focuses on any input
+/* CLEAR MESSAGES ON FOCUS */
 document.querySelectorAll('#reginForm input').forEach(input => {
     input.addEventListener('focus', () => {
         const errorDiv = document.getElementById('reginError');
         const successDiv = document.getElementById('reginSuccess');
+
         if (errorDiv) errorDiv.textContent = '';
         if (successDiv) successDiv.textContent = '';
     });
 });
-

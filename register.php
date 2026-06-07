@@ -6,33 +6,76 @@ define('PEPPER', 'k9!dP$3xZq7&vW');
 $error = "";
 $success = "";
 
+/* PASSWORD STRENGTH FUNCTION */
+function getStrength($password) {
+    $length = strlen($password);
+
+    $lower = preg_match('/[a-z]/', $password);
+    $upper = preg_match('/[A-Z]/', $password);
+    $digit = preg_match('/\d/', $password);
+    $symbol = preg_match('/[\W_]/', $password);
+
+    if ($length < 12) return "Weak";
+
+    $score = $lower + $upper + $digit + $symbol;
+
+    if ($score == 4) return "Strong";
+    if ($score >= 2) return "Medium";
+    return "Weak";
+}
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
+
     $user = trim($_POST['username']);
     $password = $_POST['password'];
+    $confirmPassword = $_POST['confirmPassword'];
 
-    // Basic validation
-    if (empty($user) || empty($password)) {
-        $error = "Please fill in both username and password.";
-    } else {
-        try {
-            // Generate salt and hash
-            $salt = bin2hex(random_bytes(16));
-            $password_hash = password_hash($password . $salt . PEPPER, PASSWORD_DEFAULT);
+    /* 1. EMPTY CHECK */
+    if (empty($user) || empty($password) || empty($confirmPassword)) {
+        $error = "Please fill in all fields.";
+    }
 
-            $sql = "INSERT INTO users (username, password_hash, salt) VALUES (:username, :password, :salt)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':username', $user);
-            $stmt->bindParam(':password', $password_hash);
-            $stmt->bindParam(':salt', $salt);
-            $stmt->execute();
+    /* 2. PASSWORD MATCH CHECK */
+    elseif ($password !== $confirmPassword) {
+        $error = "Passwords do not match.";
+    }
 
-            $success = "Account created successfully! You can now log in.";
-        } catch (PDOException $e) {
-            // Check for duplicate entry (MySQL error code 1062)
-            if ($e->errorInfo[1] == 1062) {
-                $error = "Username already taken. Please choose another one.";
-            } else {
-                $error = "Database error: Could not register user.";
+    else {
+
+        /* 3. STRENGTH CHECK */
+        $strength = getStrength($password);
+
+        if ($strength === "Weak") {
+            $error = "Password too weak (must be 12+ chars with uppercase, lowercase, number, symbol).";
+        }
+
+        else {
+            try {
+
+                /* 4. SALT GENERATION */
+                $salt = bin2hex(random_bytes(16));
+
+                /* 5. HASHING (PASSWORD + SALT + PEPPER) */
+                $password_hash = password_hash($password . $salt . PEPPER, PASSWORD_DEFAULT);
+
+                $sql = "INSERT INTO users (username, password_hash, salt)
+                        VALUES (:username, :password, :salt)";
+
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(':username', $user);
+                $stmt->bindParam(':password', $password_hash);
+                $stmt->bindParam(':salt', $salt);
+                $stmt->execute();
+
+                $success = "Account created successfully!";
+
+            } catch (PDOException $e) {
+
+                if ($e->errorInfo[1] == 1062) {
+                    $error = "Username already exists.";
+                } else {
+                    $error = "Database error occurred.";
+                }
             }
         }
     }
@@ -65,6 +108,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         <div class="input-group">
           <label for="reginPassword">Password</label>
           <input type="password" id="reginPassword" name="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+
+         <div class="input-group">
+          <label for="confirmPassword">Confrim Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" autocomplete="current-password">
         </div>
 
         <button type="submit" class="auth-btn">Register</button>

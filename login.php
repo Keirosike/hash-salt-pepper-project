@@ -62,9 +62,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Login</title>
+  <title>HatchAILogin</title>
   <link rel="stylesheet" href="css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="icon" href="images/fortitle.webp" type="image/webp" />
+
 </head>
 <body>
 <div class="auth-container">
@@ -81,10 +84,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
           <input type="text" id="loginUsername" name="username" placeholder="Username" value="<?php echo htmlspecialchars($username ?? ''); ?>" autocomplete="username">
         </div>
 
-        <div class="input-group">
-          <label for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" name="password" placeholder="••••••••" autocomplete="current-password">
-        </div>
+<div class="input-group">
+    <label for="loginPassword">Password</label>
+
+    <div class="password-wrapper">
+        <input type="password"
+               id="loginPassword"
+               name="password"  
+               placeholder="••••••••"
+               autocomplete="password">
+
+        <i class="fa-solid fa-eye toggle-password"
+           data-target="loginPassword"></i>
+    </div>
+</div>
 
         <div class="options-row">
           <label class="checkbox-label">

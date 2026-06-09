@@ -4,7 +4,7 @@ const loginBtn = document.getElementById("showLoginBtn");
 
 if (registerBtn) {
     registerBtn.addEventListener("click", function () {
-        window.location.href = "register.php";
+        window.location.href = "index.php";
     });
 }
 
@@ -122,4 +122,25 @@ document.querySelectorAll('#reginForm input').forEach(input => {
             successDiv.textContent = '';
         }
     });
+});
+
+document.querySelectorAll(".toggle-password").forEach(icon => {
+
+    icon.addEventListener("click", function () {
+
+        const target = document.getElementById(
+            this.getAttribute("data-target")
+        );
+
+        if (target.type === "password") {
+            target.type = "text";
+            this.classList.remove("fa-eye");
+            this.classList.add("fa-eye-slash");
+        } else {
+            target.type = "password";
+            this.classList.remove("fa-eye-slash");
+            this.classList.add("fa-eye");
+        }
+    });
+
 });

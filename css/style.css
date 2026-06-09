@@ -229,6 +229,53 @@ input::placeholder {
   display: none;
 }
 
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 45px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+.toggle-password:hover {
+  color: #f97316;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 45px;
+}
+
+.eye-icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #94a3b8;
+  transition: color 0.2s ease;
+}
+
+.eye-icon:hover {
+  color: #f97316;
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 480px) {
   .auth-card {
